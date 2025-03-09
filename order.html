@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Jalebis - ਬਾਬਾ ਜੀ ਜਲੇਬੀ ਵਾਲੇ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #dc3545;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .success-message {
+            color: white;
+            margin-top: 20px;
+            font-size: 24px;
+            display: none;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 48px;
+            color: #28a745;
+            margin-bottom: 10px;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            90% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .animate-checkmark {
+            animation: checkmark 0.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">ਬਾਬਾ ਜੀ ਜਲੇਬੀ ਵਾਲੇ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ourjalebi.html">Our Jalebis</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="order.html">Order Now</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1 class="text-center mb-5">Order Your Favorite Jalebis</h1>
+
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="contact-form">
+                    <form id="orderForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Delivery Address</label>
+                            <textarea class="form-control" id="address" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pincode" class="form-label">PIN Code</label>
+                            <input type="text" class="form-control" id="pincode" pattern="[0-9]{6}" maxlength="6" required>
+                            <small class="text-muted">Enter your 6-digit PIN code</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jalebiType" class="form-label">Select Jalebi Type</label>
+                            <select class="form-control" id="jalebiType" required onchange="calculateTotal()">
+                                <option value="">Choose Jalebi Type</option>
+                                <option value="red" data-price="200">Red Jalebi (Soyabin King Refined) - ₹200/kg</option>
+                                <option value="fiki" data-price="300">Fiki Jalebi (Sugar-Free, Soyabin King Refined) - ₹300/kg</option>
+                                <option value="badi" data-price="300">Badi Jaleb (Soyabin King Refined) - ₹300/kg</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity (kg)</label>
+                            <input type="number" class="form-control" id="quantity" min="1" step="0.5" required onchange="calculateTotal()" onkeyup="calculateTotal()">
+                            <small class="text-muted">Minimum order: 1 kg</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subtotal" class="form-label">Subtotal</label>
+                            <input type="text" class="form-control" id="subtotal" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deliveryCharge" class="form-label">Delivery Charge</label>
+                            <input type="text" class="form-control" id="deliveryCharge" value="₹60" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="totalPrice" class="form-label">Total Price (including delivery)</label>
+                            <input type="text" class="form-control" id="totalPrice" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-lg w-100">Place Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="spinner-overlay">
+        <div class="spinner"></div>
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="success-message">Order Placed Successfully!</div>
+    </div>
+
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>ਬਾਬਾ ਜੀ ਜਲੇਬੀ ਵਾਲੇ</h4>
+                    <p>Bringing sweetness to your life since generations</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h4>Contact Us</h4>
+                    <p>Phone: +91 7814047339<br>Email: rk3180243@gmail.com</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to speak the message
+        function speakMessage(text) {
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.volume = 1;
+            speech.rate = 0.9;  // Slightly slower rate for clarity
+            speech.pitch = 1;
+            
+            // Get all available voices
+            const voices = window.speechSynthesis.getVoices();
+            // Try to find a male voice
+            const maleVoice = voices.find(voice => voice.name.toLowerCase().includes('male'));
+            if (maleVoice) {
+                speech.voice = maleVoice;
+            }
+            
+            speech.onend = function() {
+                setTimeout(() => {
+                    window.location.href = 'thankyou.html';
+                }, 500);  // Small delay after speech before redirect
+            };
+            window.speechSynthesis.speak(speech);
+        }
+
+        // Function to auto-select jalebi type based on URL parameter
+        function autoSelectJalebiType() {
+            // Get the type from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            
+            const jalebiSelect = document.getElementById('jalebiType');
+            
+            if (type) {
+                // If type is specified in URL, select that type
+                jalebiSelect.value = type;
+            } else {
+                // If no type specified, select the first option (excluding the placeholder)
+                const firstOption = jalebiSelect.querySelector('option[value="red"]');
+                if (firstOption) {
+                    jalebiSelect.value = firstOption.value;
+                }
+            }
+            
+            // Calculate total price after selection
+            calculateTotal();
+        }
+
+        // Run auto-select when page loads
+        window.addEventListener('load', autoSelectJalebiType);
+
+        function calculateTotal() {
+            const jalebiSelect = document.getElementById('jalebiType');
+            const quantityInput = document.getElementById('quantity');
+            const subtotalInput = document.getElementById('subtotal');
+            const totalPriceInput = document.getElementById('totalPrice');
+            const deliveryCharge = 60;  // Fixed delivery charge
+            
+            if (jalebiSelect.value && quantityInput.value) {
+                const price = parseFloat(jalebiSelect.selectedOptions[0].dataset.price);
+                const quantity = parseFloat(quantityInput.value);
+                
+                if (quantity < 1) {
+                    alert('Minimum order quantity is 1 kg');
+                    quantityInput.value = 1;
+                    calculateTotal();
+                    return;
+                }
+                
+                const subtotal = price * quantity;
+                const total = subtotal + deliveryCharge;
+                
+                subtotalInput.value = `₹${subtotal.toFixed(2)}`;
+                totalPriceInput.value = `₹${total.toFixed(2)}`;
+            } else {
+                subtotalInput.value = '';
+                totalPriceInput.value = '';
+            }
+        }
+
+        // Add form validation for minimum quantity
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            const quantity = parseFloat(document.getElementById('quantity').value);
+            if (quantity < 1) {
+                e.preventDefault();
+                alert('Minimum order quantity is 1 kg');
+                document.getElementById('quantity').value = 1;
+                calculateTotal();
+            }
+        });
+
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading spinner
+            const spinnerOverlay = document.querySelector('.spinner-overlay');
+            spinnerOverlay.style.display = 'flex';
+            
+            // Hide the spinner initially
+            document.querySelector('.spinner').style.display = 'block';
+            document.querySelector('.success-message').style.display = 'none';
+            document.querySelector('.success-icon').style.display = 'none';
+            
+            // Get form data
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+            const pincode = document.getElementById('pincode').value;
+            const jalebiType = document.getElementById('jalebiType').value;
+            const quantity = document.getElementById('quantity').value;
+            const totalPrice = document.getElementById('totalPrice').value;
+            
+            // Create order object
+            const order = {
+                timestamp: new Date().toISOString(),
+                customer: {
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    address: address,
+                    pincode: pincode
+                },
+                jalebiType: jalebiType,
+                quantity: quantity,
+                totalPrice: totalPrice,
+                status: 'pending',
+                paymentMethod: 'Cash on Delivery'
+            };
+            
+            // Simulate order processing
+            await new Promise(resolve => setTimeout(resolve, 1000));  // Reduced delay
+            
+            // Show success message and icon
+            document.querySelector('.spinner').style.display = 'none';
+            document.querySelector('.success-message').style.display = 'block';
+            document.querySelector('.success-icon').style.display = 'block';
+            document.querySelector('.success-icon').classList.add('animate-checkmark');
+            
+            // Small delay before speaking to ensure UI is updated
+            setTimeout(() => {
+                const message = `Order successful! Thank you.`;
+                speakMessage(message);
+            }, 300);
+        });
+        
+    </script>
+</body>
+</html>
